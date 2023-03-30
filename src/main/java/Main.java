@@ -25,7 +25,7 @@ public class Main {
 
         List<Student> students = Arrays.asList(ivanov, sidorov);
 
-        LocalDateTime reportDateTime = LocalDateTime.of(2020, 6, 1, 15, 0);
+        LocalDateTime reportDateTime = LocalDateTime.of(2020, 6, 8, 15, 0);
         Scanner scanner = new Scanner(System.in);
         System.out.print("Please enter a report type parameter: ");
         String reportType = scanner.next();

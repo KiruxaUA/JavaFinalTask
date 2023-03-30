@@ -32,40 +32,32 @@ public class TrainingCenter {
         return currentDateTime;
     }
 
-    public static String generateShortReport(Student student, LocalDateTime reportDateTime) {
+    public static String getStatus(Student student, LocalDateTime reportDateTime) {
         LocalDateTime endDateTime = calculateEndDateTime(student);
         Duration duration = Duration.between(reportDateTime, endDateTime);
-        String status;
         if (duration.isNegative()) {
-            status = String.format("Training completed. %d hours have passed since the end.", Math.abs(duration.toHours()));
+            return String.format("Training completed. %d hours have passed since the end.", Math.abs(duration.toHours()));
         } else {
             long days = duration.toDays();
             long hours = duration.minusDays(days).toHours();
-            status = String.format("Training is not finished. %d d %d hours are left until the end.", days, hours);
+            return String.format("Training is not finished. %d d %d hours are left until the end.", days, hours);
         }
+    }
 
+    public static String generateShortReport(Student student, LocalDateTime reportDateTime) {
+        String status = getStatus(student, reportDateTime);
         return String.format("%s (%s) - %s", student.name, student.curriculum, status);
     }
 
     public static String generateFullReport(Student student, LocalDateTime reportDateTime) {
-        LocalDateTime endDateTime = calculateEndDateTime(student);
-        Duration duration = Duration.between(reportDateTime, endDateTime);
-        String status;
-        if (duration.isNegative()) {
-            status = String.format("Training completed. %d hours have passed since the end.", Math.abs(duration.toHours()));
-        } else {
-            long days = duration.toDays();
-            long hours = duration.minusDays(days).toHours();
-            status = String.format("Training is not finished. %d d %d hours are left until the end.", days, hours);
-        }
-
+        String status = getStatus(student, reportDateTime);
         int programDuration = student.courses.stream().mapToInt(course -> course.durationHours).sum();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
         String startDateStr = student.startDate.format(dateFormatter);
-        String endDateStr = endDateTime.toLocalDate().format(dateFormatter);
+        String endDateStr = calculateEndDateTime(student).toLocalDate().format(dateFormatter);
 
         return String.format("Student name: %s\nWorking time (from 10 to 18)\nProgram name: %s\n" +
-                "Program duration (hours): %d\nStart date: %s\nEnd date: %s\n%s",
+                        "Program duration (hours): %d\nStart date: %s\nEnd date: %s\n%s",
                 student.name, student.curriculum, programDuration, startDateStr, endDateStr, status);
     }
 }
