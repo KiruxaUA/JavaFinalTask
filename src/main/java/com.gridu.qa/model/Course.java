@@ -1,9 +1,6 @@
 package com.gridu.qa.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * The Course class represents a course with a name and duration in hours.
@@ -11,9 +8,8 @@ import lombok.Setter;
  * Getter and setters for these fields and equals and hashcode realization.
  */
 @Data
-@Getter
-@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Course {
     private String name;
     private int durationHours;

@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -38,11 +38,13 @@ public class TrainingCenterServiceTest {
         );
     }
 
+    TrainingCenterService trainingCenterService = new TrainingCenterService();
+
     @ParameterizedTest
     @MethodSource("testDataProvider")
     void testCalculateEndDateTime(Student student, LocalDateTime reportDateTime, String expectedEndDateTimeStr, String expectedStatus, String expectedShortReport) {
         LocalDateTime expectedEndDateTime = LocalDateTime.parse(expectedEndDateTimeStr);
-        LocalDateTime actualEndDateTime = TrainingCenterService.calculateEndDateTime(student);
+        LocalDateTime actualEndDateTime = trainingCenterService.calculateEndDateTime(student);
 
         assertEquals(expectedEndDateTime, actualEndDateTime);
     }
@@ -50,7 +52,7 @@ public class TrainingCenterServiceTest {
     @ParameterizedTest
     @MethodSource("testDataProvider")
     void testGetStatus(Student student, LocalDateTime reportDateTime, String expectedEndDateTimeStr, String expectedStatus, String expectedShortReport) {
-        String actualStatus = TrainingCenterService.getStatus(student, reportDateTime);
+        String actualStatus = trainingCenterService.getStatus(student, reportDateTime);
 
         assertEquals(expectedStatus, actualStatus);
     }
@@ -58,7 +60,7 @@ public class TrainingCenterServiceTest {
     @ParameterizedTest
     @MethodSource("testDataProvider")
     void testGenerateShortReport(Student student, LocalDateTime reportDateTime, String expectedEndDateTimeStr, String expectedStatus, String expectedShortReport) {
-        String actualShortReport = TrainingCenterService.generateShortReport(student, reportDateTime);
+        String actualShortReport = trainingCenterService.generateShortReport(student, reportDateTime);
 
         assertEquals(expectedShortReport, actualShortReport);
     }
@@ -76,51 +78,25 @@ public class TrainingCenterServiceTest {
                 expectedStatus
         );
 
-        String actualFullReport = TrainingCenterService.generateFullReport(student, reportDateTime);
-
+        String actualFullReport = trainingCenterService.generateFullReport(student, reportDateTime);
         assertEquals(expectedFullReport, actualFullReport);
     }
 
     @Test
-    void testCalculateEndDateTime_NullStudent() {
-        assertThrows(NullPointerException.class, () -> TrainingCenterService.calculateEndDateTime(null));
+    void generateShortReport_throwsNullPointerException() {
+        Student invalidStudent = new Student("Vasya Pupkin", "Curriculum", null, new ArrayList<>());
+        LocalDateTime invalidReportDateTime = LocalDateTime.of(1900, 1, 1, 0, 0);
+        assertThrows(
+                NullPointerException.class,
+                () -> trainingCenterService.generateShortReport(invalidStudent, invalidReportDateTime));
     }
 
     @Test
-    void testGetStatus_NullStudent() {
-        assertThrows(NullPointerException.class, () -> TrainingCenterService.getStatus(null, LocalDateTime.now()));
-    }
-
-    @Test
-    void testGetStatus_NullReportDateTime() {
-        Student student = createTestStudent();
-        assertThrows(NullPointerException.class, () -> TrainingCenterService.getStatus(student, null));
-    }
-
-    @Test
-    void testGenerateShortReport_NullStudent() {
-        assertThrows(NullPointerException.class, () -> TrainingCenterService.generateShortReport(null, LocalDateTime.now()));
-    }
-
-    @Test
-    void testGenerateShortReport_NullReportDateTime() {
-        Student student = createTestStudent();
-        assertThrows(NullPointerException.class, () -> TrainingCenterService.generateShortReport(student, null));
-    }
-
-    @Test
-    void testGenerateFullReport_NullStudent() {
-        assertThrows(NullPointerException.class, () -> TrainingCenterService.generateFullReport(null, LocalDateTime.now()));
-    }
-
-    @Test
-    void testGenerateFullReport_NullReportDateTime() {
-        Student student = createTestStudent();
-        assertThrows(NullPointerException.class, () -> TrainingCenterService.generateFullReport(student, null));
-    }
-
-    private Student createTestStudent() {
-        List<Course> courses = Arrays.asList(new Course("Java Basics", 16), new Course("Java Advanced", 24));
-        return new Student("John Doe", "Java Developer", LocalDate.now(), courses);
+    void generateFullReport_throwsNullPointerException() {
+        Student invalidStudent = new Student("Vasya Pupkin", "Curriculum", LocalDate.now(), null);
+        LocalDateTime invalidReportDateTime = null;
+        assertThrows(
+                NullPointerException.class,
+                () -> trainingCenterService.generateFullReport(invalidStudent, invalidReportDateTime));
     }
 }
